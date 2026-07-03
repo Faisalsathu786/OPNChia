@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useState } from "react";
+import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Head from "next/head";
 import CreateToken from "@/components/CreateToken";
 import TradePanel from "@/components/TradePanel";
 import TokenExplorer from "@/components/TokenExplorer";
 import MyTokens from "@/components/MyTokens";
+import AdminPanel from "@/components/AdminPanel";
 
-type Tab = "explore" | "create" | "trade" | "mytokens";
+type Tab = "explore" | "create" | "trade" | "mytokens" | "admin";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("explore");
@@ -25,6 +26,7 @@ export default function Home() {
     { key: "create", label: "✨ Create Token" },
     { key: "trade", label: "📊 Trade" },
     { key: "mytokens", label: "👛 My Tokens" },
+    { key: "admin", label: "⚙️ Admin" },
   ];
 
   return (
@@ -97,6 +99,7 @@ export default function Home() {
               <TradePanel selectedToken={selectedToken} onSelectToken={setSelectedToken} />
             )}
             {activeTab === "mytokens" && <MyTokens />}
+            {activeTab === "admin" && <AdminPanel factoryAddress={FACTORY_ADDRESS} adminAddress={address} />}
           </>
         )}
       </div>
