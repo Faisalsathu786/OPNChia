@@ -16,7 +16,7 @@ const opnChain = {
 
 const config = getDefaultConfig({
   appName: "OPNChia",
-  projectId: "YOUR_WALLETCONNECT_PROJECT_ID",
+  projectId: "e65e0e8ee0b354919610b744401ec152",
   chains: [opnChain as any],
   ssr: true,
 });
