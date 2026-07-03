@@ -129,7 +129,9 @@ contract OPNChiaBondingCurve {
     // ── GET PRICE ──
     function getCurrentPrice() public view returns (uint256) {
         if (currentSupply >= tokensForSale) return type(uint256).max;
-        return basePrice + (currentSupply * curveCoefficient);
+        uint256 supplyInTokens = currentSupply / 10**tokenDecimals;
+        if (supplyInTokens == 0) return basePrice;
+        return basePrice + (supplyInTokens * curveCoefficient);
     }
 
     function getCurrentPriceInTokens(uint256 iopnAmount) public view returns (uint256) {
@@ -156,14 +158,14 @@ contract OPNChiaBondingCurve {
 
     // ── INTERNAL MATH ──
     function _calculateTokenAmount(uint256 iopnAmount, uint256 supply) internal view returns (uint256) {
-        uint256 price = basePrice + (supply * curveCoefficient);
-        if (price == 0) price = basePrice;
+        uint256 supplyInTokens = supply / 10**tokenDecimals;
+        uint256 price = supplyInTokens == 0 ? basePrice : basePrice + (supplyInTokens * curveCoefficient);
         return (iopnAmount * 10**tokenDecimals) / price;
     }
 
     function _calculateIopnReturn(uint256 tokenAmount, uint256 supply) internal view returns (uint256) {
-        uint256 price = basePrice + ((supply - tokenAmount) * curveCoefficient);
-        if (price == 0) price = basePrice;
+        uint256 netSupplyInTokens = (supply - tokenAmount) / 10**tokenDecimals;
+        uint256 price = netSupplyInTokens == 0 ? basePrice : basePrice + (netSupplyInTokens * curveCoefficient);
         return (tokenAmount * price) / 10**tokenDecimals;
     }
 
