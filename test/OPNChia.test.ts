@@ -13,11 +13,11 @@ describe("OPNChia - Bonding Curve Launchpad", function () {
   let buyer2: SignerWithAddress;
   let creator: SignerWithAddress;
 
-  const TOTAL_SUPPLY = ethers.parseEther("100000000");    // 100M tokens
-  const TOKENS_FOR_SALE = ethers.parseEther("50000000");  // 50M for sale
-  const BASE_PRICE = ethers.parseEther("0.00000001");     // 0.00000001 IOPN
-  const CURVE_COEFF = ethers.parseEther("0.00000000001"); // Slope
-  const MIGRATION_THRESHOLD = ethers.parseEther("10");     // 10 IOPN
+  const TOTAL_SUPPLY = ethers.parseEther("1000000");      // 1M tokens
+  const TOKENS_FOR_SALE = ethers.parseEther("500000");    // 500K for sale
+  const BASE_PRICE = ethers.parseEther("0.001");          // 0.001 IOPN per token
+  const CURVE_COEFF = ethers.parseEther("0.000001");     // Slope
+  const MIGRATION_THRESHOLD = ethers.parseEther("500");   // 500 IOPN
   const CREATION_FEE = ethers.parseEther("0.01");
 
   beforeEach(async function () {
@@ -122,11 +122,11 @@ describe("OPNChia - Bonding Curve Launchpad", function () {
 
   describe("Migration", function () {
     it("Should migrate when threshold is hit", async function () {
-      const buyAmount = ethers.parseEther("5");
+      const buyAmount = ethers.parseEther("300");
       await curve.connect(buyer1).buyTokens({ value: buyAmount });
       await curve.connect(buyer2).buyTokens({ value: buyAmount });
 
-      // Total raised should be 10, threshold hit
+      // Total raised should be 600, threshold hit (500)
       expect(await curve.migrated()).to.be.true;
     });
   });
