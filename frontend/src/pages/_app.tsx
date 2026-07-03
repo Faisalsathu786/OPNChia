@@ -21,6 +21,12 @@ const config = getDefaultConfig({
   ssr: true,
 });
 
+// NOTE: WalletConnect project ID ke liye:
+// 1. Go to cloud.walletconnect.com
+// 2. Sign up (free)
+// 3. Create project → copy Project ID
+// 4. Yahan paste karo (abe "YOUR_WALLETCONNECT_PROJECT_ID" ki jagah)
+
 const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
