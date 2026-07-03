@@ -16,7 +16,8 @@ export default function Home() {
   const { address, isConnected } = useAccount();
 
   // Factory contract address (update after deploy)
-  const FACTORY_ADDRESS = "0x0000000000000000000000000000000000000000";
+  const FACTORY_ADDRESS = "0x46B756f6A9A1e1833843c59639cC61f4459f397F";
+  const ADMIN_ADDRESS = "0x6c9d7E75d1bb911CC8351f08EBac7261452587FB";
 
   // Demo mode — show UI without wallet
   const [demoMode, setDemoMode] = useState(false);
@@ -99,7 +100,7 @@ export default function Home() {
               <TradePanel selectedToken={selectedToken} onSelectToken={setSelectedToken} />
             )}
             {activeTab === "mytokens" && <MyTokens />}
-            {activeTab === "admin" && <AdminPanel factoryAddress={FACTORY_ADDRESS} adminAddress={address} />}
+            {activeTab === "admin" && <AdminPanel factoryAddress={FACTORY_ADDRESS} adminAddress={ADMIN_ADDRESS} />}
           </>
         )}
       </div>
