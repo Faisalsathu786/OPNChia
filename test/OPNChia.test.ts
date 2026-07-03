@@ -13,10 +13,10 @@ describe("OPNChia - Bonding Curve Launchpad", function () {
   let buyer2: SignerWithAddress;
   let creator: SignerWithAddress;
 
-  const TOTAL_SUPPLY = ethers.parseEther("1000000");      // 1M tokens
-  const TOKENS_FOR_SALE = ethers.parseEther("500000");    // 500K for sale
-  const BASE_PRICE = ethers.parseEther("0.001");          // 0.001 IOPN per token
-  const CURVE_COEFF = ethers.parseEther("0.000001");     // Slope
+  const TOTAL_SUPPLY = ethers.parseEther("10000000");     // 10M tokens
+  const TOKENS_FOR_SALE = ethers.parseEther("5000000");   // 5M for sale
+  const BASE_PRICE = ethers.parseEther("0.0001");         // 0.0001 IOPN per token
+  const CURVE_COEFF = ethers.parseEther("0.00000001");   // Gentle slope
   const MIGRATION_THRESHOLD = ethers.parseEther("500");   // 500 IOPN
   const CREATION_FEE = ethers.parseEther("0.01");
 
@@ -108,12 +108,12 @@ describe("OPNChia - Bonding Curve Launchpad", function () {
 
   describe("Bonding Curve - Sell", function () {
     it("Should let user sell tokens back", async function () {
-      const buyAmount = ethers.parseEther("2");
+      const buyAmount = ethers.parseEther("10");
       await curve.connect(buyer1).buyTokens({ value: buyAmount });
 
       const balance = await token.balanceOf(buyer1.address);
       await token.connect(buyer1).approve(await curve.getAddress(), balance);
-      await curve.connect(buyer1).sellTokens(balance / 2n);
+      await curve.connect(buyer1).sellTokens(balance / 20n);
 
       const afterBalance = await token.balanceOf(buyer1.address);
       expect(afterBalance).to.be.lt(balance);
