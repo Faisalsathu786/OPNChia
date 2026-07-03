@@ -88,6 +88,9 @@ contract OPNChiaFactory {
         );
         curveAddress = address(curve);
 
+        // Authorize bonding curve to mint/burn
+        newToken.authorizeMinter(curveAddress);
+
         // Transfer tokens to bonding curve
         newToken.transfer(curveAddress, tokensForSale);
 

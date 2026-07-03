@@ -4,17 +4,18 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-/**
- * @title OPNChiaToken
- * @notice Standard ERC-20 token created via OPNChia Factory
- * Minted on buy, burned on sell via bonding curve
- */
 contract OPNChiaToken is ERC20, ERC20Burnable {
     address public factory;
     uint8 private _decimals;
+    mapping(address => bool) public authorizedMinters;
 
     modifier onlyFactory() {
         require(msg.sender == factory, "Only factory");
+        _;
+    }
+
+    modifier onlyAuthorized() {
+        require(msg.sender == factory || authorizedMinters[msg.sender], "Not authorized");
         _;
     }
 
@@ -31,11 +32,19 @@ contract OPNChiaToken is ERC20, ERC20Burnable {
         return _decimals;
     }
 
-    function mint(address to, uint256 amount) external onlyFactory {
+    function authorizeMinter(address minter) external onlyFactory {
+        authorizedMinters[minter] = true;
+    }
+
+    function revokeMinter(address minter) external onlyFactory {
+        authorizedMinters[minter] = false;
+    }
+
+    function mint(address to, uint256 amount) external onlyAuthorized {
         _mint(to, amount);
     }
 
-    function burnFrom(address account, uint256 amount) public override onlyFactory {
+    function burnFrom(address account, uint256 amount) public override onlyAuthorized {
         _burn(account, amount);
     }
 }
