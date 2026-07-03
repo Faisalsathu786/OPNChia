@@ -1,39 +1,66 @@
-# OPNChia — Pump.fun Style Bonding Curve Launchpad on OPN Chain
+# 🔥 OPNChia
 
-A decentralized token launchpad with bonding curve pricing on OPN Chain (IOPn).
+Bonding curve token launchpad on OPN Chain. Create tokens in one click, trade them on a dynamic curve.
 
-## Features
+## What It Does
 
-- **1-Click Token Creation** — Deploy token + bonding curve in one transaction
-- **Bonding Curve Pricing** — Price increases as more people buy (fair launch)
-- **Instant Trading** — Buy/sell tokens directly against the bonding curve
-- **Auto-Migration** — When threshold hits, liquidity migrates to DEX
-- **Fully On-Chain** — No backend, no custody, transparent
+OPNChia lets anyone deploy an ERC-20 token with a bonding curve in a single transaction. Price starts low and increases with each buy. When enough liquidity accumulates, the curve auto-migrates to a DEX pool.
 
-## Smart Contracts
+- **1-click token creation**
+- **Dynamic bonding curve pricing**
+- **Buy / sell against the curve**
+- **Auto-migration to DEX at threshold**
+
+## Contracts
 
 | Contract | Purpose |
 |----------|---------|
-| OPNChiaFactory.sol | Creates tokens + bonding curves |
-| OPNChiaBondingCurve.sol | Bonding curve math — buy/sell |
-| OPNChiaMigrator.sol | Auto-migrates liquidity to DEX |
-| OPNChiaToken.sol | Standard ERC-20 (mintable/burnable) |
+| `OPNChiaFactory.sol` | Deploy tokens + bonding curves |
+| `OPNChiaBondingCurve.sol` | Curve math — buy, sell, pricing |
+| `OPNChiaMigrator.sol` | Auto liquidity migration |
+| `OPNChiaToken.sol` | ERC-20 (mintable / burnable) |
 
-## Setup
+## Tech Stack
+
+**Smart Contracts:** Solidity 0.8.24 · Hardhat · OpenZeppelin
+
+**Frontend:** Next.js · Tailwind CSS · wagmi · viem · RainbowKit
+
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- MetaMask with OPN Testnet added
 
-### Backend (Smart Contracts)
+- Node.js 18+
+- MetaMask
+
+### Install & Compile
 
 ```bash
-cd backend
+git clone https://github.com/Faisalsathu786/OPNChia.git
+cd OPNChia
 npm install
 npx hardhat compile
+```
+
+### Run Tests
+
+```bash
 npx hardhat test
+```
+
+### Deploy
+
+Create a `.env` file:
+
+```
+PRIVATE_KEY=your_wallet_private_key
+```
+
+```bash
 npx hardhat run scripts/deploy.ts --network opnTestnet
 ```
+
+After deploy, copy the Factory address and update it in `frontend/src/pages/index.tsx`.
 
 ### Frontend
 
@@ -43,28 +70,30 @@ npm install
 npm run dev
 ```
 
-## OPN Chain Config
+Open [http://localhost:3000](http://localhost:3000).
 
-| Parameter | Value |
-|-----------|-------|
-| Network Name | OPN Testnet |
-| RPC URL | https://testnet-rpc2.iopn.tech |
+## OPN Chain
+
+| Config | Value |
+|--------|-------|
 | Chain ID | 984 |
-| Symbol | IOPN |
+| RPC | https://testnet-rpc2.iopn.tech |
 | Explorer | https://testnet.iopn.tech |
+| Faucet | https://faucet.iopn.tech |
+| Symbol | IOPN |
 
-## Bonding Curve Formula
+## How It Works
 
-```
+```solidity
 price = basePrice + (currentSupply * curveCoefficient)
 ```
 
-## Season 1 — DeFi & Open Finance
-- Submissions: May 28 – Jun 21, 2026
-- Finale: Jul 15, 2026
-- Submit at: https://builders.iopn.tech
+1. Creator pays a creation fee and deploys token + bonding curve
+2. Buyers send IOPN → receive tokens at current curve price
+3. Price increases as supply grows (every buy makes it more expensive)
+4. Sellers can sell tokens back → IOPN returned at current curve price
+5. When `totalRaised >= migrationThreshold`, curve auto-finalises
 
-## Links
-- Builders Dashboard: https://builders.iopn.tech
-- IOPn Docs: https://iopn.gitbook.io/iopn
-- OPN Faucet: https://faucet.iopn.tech
+## License
+
+MIT
