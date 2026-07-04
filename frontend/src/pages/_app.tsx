@@ -1,11 +1,11 @@
 import type { AppProps } from "next/app";
 import "@/styles/globals.css";
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
+import { getDefaultConfig, RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
+import { WagmiProvider, createStorage, cookieStorage } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import "@rainbow-me/rainbowkit/styles.css";
 
-// OPN Chain config
 const opnChain = {
   id: 984,
   name: "OPN Testnet",
@@ -19,21 +19,25 @@ const config = getDefaultConfig({
   projectId: "e65e0e8ee0b354919610b744401ec152",
   chains: [opnChain as any],
   ssr: true,
+  storage: createStorage({
+    storage: typeof window !== "undefined" ? window.localStorage : cookieStorage,
+    key: "opnchia-wallet",
+  }),
 });
-
-// NOTE: WalletConnect project ID ke liye:
-// 1. Go to cloud.walletconnect.com
-// 2. Sign up (free)
-// 3. Create project → copy Project ID
-// 4. Yahan paste karo (abe "YOUR_WALLETCONNECT_PROJECT_ID" ki jagah)
 
 const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
+  // Fix hydration mismatch - only render after mount
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return <div />;
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
+        <RainbowKitProvider coolMode>
           <Component {...pageProps} />
         </RainbowKitProvider>
       </QueryClientProvider>
