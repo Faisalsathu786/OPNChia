@@ -134,7 +134,7 @@ export default function AdminPanel({ factoryAddress, adminAddress }: Props) {
    </div>
 
    {/* Platform Stats */}
-   <div className="grid grid-cols-4 gap-4">
+   <div className="grid grid-cols-3 gap-4">
     <div className="card text-center py-4">
      <div className="text-2xl font-bold text-purple-400">{Number(tokenCount || 0)}</div>
      <div className="text-sm text-gray-400">Total Tokens</div>
@@ -148,8 +148,6 @@ export default function AdminPanel({ factoryAddress, adminAddress }: Props) {
      <div className="text-sm text-gray-400">Active Curves</div>
     </div>
     <div className="card text-center py-4">
-     <div className="text-2xl font-bold text-yellow-400">4.6K+</div>
-     <div className="text-sm text-gray-400">Builders</div>
     </div>
    </div>
 

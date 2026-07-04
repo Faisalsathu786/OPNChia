@@ -287,21 +287,7 @@ export default function TradePanel({ selectedToken, onSelectToken }: Props) {
     </div>
 
     {/* Quick select — demo tokens */}
-    <div className="card">
-     <h4 className="text-sm text-gray-400 mb-2">Quick Select (Demo)</h4>
-     <div className="space-y-2">
-      {["0x263D9D9B1e26dE17e78D3b5DD919d49638Bad130", "0xe1D9598Dd692c8a2a773B883616a79E4DeD40Dd9"].map((addr) => (
-       <button
-        key={addr}
-        className={`w-full text-left text-xs p-2 rounded ${curveAddress === addr ? 'bg-purple-900/30 border border-purple-700' : 'bg-gray-900 hover:bg-gray-800'}`}
-        onClick={() => setCurveAddress(addr)}
-       >
-        {addr.substring(0, 12)}...{addr.substring(addr.length - 6)}
-       </button>
-      ))}
-     </div>
-    </div>
-   </div>
+    
   </div>
  );
 }
