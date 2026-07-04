@@ -71,14 +71,6 @@ export default function Home() {
               Create and trade tokens on OPN Chain with bonding curve pricing
             </p>
             <ConnectButton />
-            <div className="mt-4">
-              <button
-                className="text-sm text-gray-500 underline"
-                onClick={() => setDemoMode(true)}
-              >
-
-              </button>
-            </div>
           </div>
         ) : (
           <>

@@ -294,8 +294,7 @@ export default function TradePanel({ selectedToken, onSelectToken }: Props) {
      )}
     </div>
 
-    {/* Quick select — demo tokens */}
-    
+
   </div>
  );
 }
