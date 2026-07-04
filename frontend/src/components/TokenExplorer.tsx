@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAccount } from "wagmi";
 import { createPublicClient, http } from "viem";
 import { opnTestnet } from "./opnConfig";
 
