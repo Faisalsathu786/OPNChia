@@ -293,6 +293,7 @@ export default function TradePanel({ selectedToken, onSelectToken }: Props) {
       </div>
      )}
     </div>
-
+   </div>
+  </div>
  );
 }
