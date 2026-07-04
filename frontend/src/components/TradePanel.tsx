@@ -19,8 +19,6 @@ export default function TradePanel({ selectedToken, factoryAddress, onSelectToke
  const [buyAmount, setBuyAmount] = useState("1");
  const [sellAmount, setSellAmount] = useState("");
  const [action, setAction] = useState<"buy" | "sell">("buy");
- const [loading, setLoading] = useState(false);
- const [txHash, setTxHash] = useState<string | null>(null);
 
  const addr = selectedToken ? (selectedToken as `0x${string}`) : undefined;
 
@@ -32,7 +30,7 @@ export default function TradePanel({ selectedToken, factoryAddress, onSelectToke
  const { data: migrated } = useReadContract({ address: addr, abi: CURVE_ABI, functionName: "migrated", query: { enabled: !!addr } });
  const { data: saleCap } = useReadContract({ address: addr, abi: CURVE_ABI, functionName: "tokensForSale", query: { enabled: !!addr } });
 
- const { writeContract } = useWriteContract();
+ const { writeContract, data: hash, isPending } = useWriteContract();
 
  if (!selectedToken) {
   return (
@@ -52,17 +50,13 @@ export default function TradePanel({ selectedToken, factoryAddress, onSelectToke
  const prog = raised && saleCap ? Math.min(100, Number(raised) * 100 / Number(saleCap)) : 0;
 
  const handleBuy = () => {
-  if (!buyAmount) return;
-  setLoading(true); setTxHash(null);
+  if (!buyAmount || !addr) return;
   writeContract({ address: addr, abi: CURVE_ABI, functionName: "buyTokens", value: BigInt(Math.floor(parseFloat(buyAmount) * 1e18)) });
-  setLoading(false);
  };
 
  const handleSell = () => {
-  if (!sellAmount) return;
-  setLoading(true); setTxHash(null);
+  if (!sellAmount || !addr) return;
   writeContract({ address: addr, abi: CURVE_ABI, functionName: "sellTokens", args: [BigInt(Math.floor(parseFloat(sellAmount) * 1e18))] });
-  setLoading(false);
  };
 
  return (
@@ -88,13 +82,13 @@ export default function TradePanel({ selectedToken, factoryAddress, onSelectToke
       <>
        <div><label className="text-sm text-gray-400">Amount (IOPN)</label><input className="input-field mt-1" type="number" value={buyAmount} onChange={e=>setBuyAmount(e.target.value)} /></div>
        {price && <div className="text-sm text-gray-400">{buyAmount ? Math.floor(parseFloat(buyAmount)/(Number(price) / 1e18)) : 0} {symbol}</div>}
-       <button className="btn-primary w-full" onClick={handleBuy} disabled={loading}>{loading?"Processing...":"Buy "+symbol}</button>
+       <button className="btn-primary w-full" onClick={handleBuy} disabled={isPending}>{isPending?"Processing...":"Buy "+symbol}</button>
       </>
      ) : (
       <>
        <div><label className="text-sm text-gray-400">Token Amount</label><input className="input-field mt-1" type="number" value={sellAmount} onChange={e=>setSellAmount(e.target.value)} /></div>
        {price && <div className="text-sm text-gray-400">{sellAmount ? (parseFloat(sellAmount)*(Number(price)/1e18)).toFixed(6) : 0} IOPN</div>}
-       <button className="btn-primary w-full !bg-red-600 hover:!bg-red-700" onClick={handleSell} disabled={loading}>{loading?"Processing...":"Sell "+symbol}</button>
+       <button className="btn-primary w-full !bg-red-600 hover:!bg-red-700" onClick={handleSell} disabled={isPending}>{isPending?"Processing...":"Sell "+symbol}</button>
       </>
      )}
     </div>
@@ -110,7 +104,7 @@ export default function TradePanel({ selectedToken, factoryAddress, onSelectToke
      <div className="text-xs text-gray-500">Progress: {prog.toFixed(1)}%</div>
     </div>
    </div>
-   {txHash && <div className="bg-green-900/30 border border-green-700 rounded-lg p-3 mt-4 text-sm text-green-300">Tx: <a href={`https://testnet.iopn.tech/tx/${txHash}`} target="_blank" className="underline">{txHash.substring(0,20)}...</a></div>}
+   {hash && <div className="bg-green-900/30 border border-green-700 rounded-lg p-3 mt-4 text-sm text-green-300">Tx: <a href={`https://testnet.iopn.tech/tx/${hash}`} target="_blank" className="underline">{hash.substring(0,20)}...</a></div>}
   </div>
  );
 }
