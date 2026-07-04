@@ -39,8 +39,8 @@ const client = createPublicClient({
 export default function TokenExplorer({ onSelectToken, factoryAddress }: Props) {
   const [tokens, setTokens] = useState<TokenCard[]>([]);
   const [totalRaised, setTotalRaised] = useState("0");
-  const [tokenCount, setTokenCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [tokenCount, setTokenCount] = useState<number | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -53,10 +53,12 @@ export default function TokenExplorer({ onSelectToken, factoryAddress }: Props) 
           functionName: "getTokenCount",
         });
         const countNum = Number(count);
+        if (!active) return;
         setTokenCount(countNum);
 
         if (countNum === 0) {
-          if (active) setLoading(false);
+          setTokens([]);
+          setTotalRaised("0");
           return;
         }
 
@@ -67,64 +69,78 @@ export default function TokenExplorer({ onSelectToken, factoryAddress }: Props) 
         });
 
         const curveAddrs = curves as string[];
+        if (!active) return;
+
         const cards: TokenCard[] = [];
         let sum = 0n;
 
-        for (const addr of curveAddrs) {
+        for (const addr of curveAddrs.slice(0, 50)) {
           try {
-            const results = await client.multicall({
-              contracts: [
-                { address: addr as `0x${string}`, abi: curveAbi, functionName: "tokenName" },
-                { address: addr as `0x${string}`, abi: curveAbi, functionName: "tokenSymbol" },
-                { address: addr as `0x${string}`, abi: curveAbi, functionName: "currentSupply" },
-                { address: addr as `0x${string}`, abi: curveAbi, functionName: "totalRaised" },
-                { address: addr as `0x${string}`, abi: curveAbi, functionName: "getCurrentPrice" },
-                { address: addr as `0x${string}`, abi: curveAbi, functionName: "migrationThreshold" },
-              ],
-            });
+            const [nameR, symR, supR, raiseR, prcR, thrR] = await Promise.all([
+              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "tokenName" }),
+              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "tokenSymbol" }),
+              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "currentSupply" }),
+              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "totalRaised" }),
+              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "getCurrentPrice" }),
+              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "migrationThreshold" }),
+            ]);
 
-            const raised = results[3].status === "fulfilled" ? (results[3].value as bigint) : 0n;
-            sum += raised;
+            const raisedVal = raiseR as bigint;
+            sum += raisedVal;
 
             cards.push({
               curveAddress: addr,
-              tokenName: results[0].status === "fulfilled" ? (results[0].value as string) : "Unknown",
-              tokenSymbol: results[1].status === "fulfilled" ? (results[1].value as string) : "???",
-              supply: results[2].status === "fulfilled" ? (Number(results[2].value) / 1e18).toFixed(1) : "0",
-              raised: Number(raised) / 1e18 + "",
-              price: results[4].status === "fulfilled" ? (Number(results[4].value) / 1e18).toExponential(3) : "0",
-              target: results[5].status === "fulfilled" ? (Number(results[5].value) / 1e18).toFixed(1) : "0",
+              tokenName: nameR as string,
+              tokenSymbol: symR as string,
+              supply: (Number(supR) / 1e18).toFixed(1),
+              raised: Number(raisedVal) / 1e18 + "",
+              price: (Number(prcR) / 1e18).toExponential(3),
+              target: (Number(thrR) / 1e18).toFixed(1),
             });
           } catch (e) {
-            // skip problematic curve
+            // skip individual curve read errors
           }
         }
 
         if (active) {
           setTokens(cards);
           setTotalRaised((Number(sum) / 1e18).toFixed(4));
-          setLoading(false);
         }
-      } catch (e) {
-        if (active) setLoading(false);
+      } catch (e: any) {
+        if (active) {
+          setError(e?.message || "Failed to load tokens. Check RPC connection.");
+          setTokenCount(0);
+        }
       }
     }
 
     load();
-    // Auto-refresh every 15s
-    const interval = setInterval(load, 15000);
+    const interval = setInterval(load, 20000);
     return () => { active = false; clearInterval(interval); };
   }, [factoryAddress]);
 
-  if (loading) {
+  if (tokenCount === null) {
     return <div className="text-center py-16 text-gray-500"><p>Loading tokens...</p></div>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h2 className="text-2xl font-bold mb-6">Token Explorer</h2>
+        <div className="card text-center py-16 text-yellow-500">
+          <p>RPC connection issue</p>
+          <p className="text-sm text-gray-500 mt-2">{error}</p>
+          <p className="text-xs text-gray-600 mt-4">Your wallet must be connected to OPN chain. Check MetaMask -> Network -> OPN Testnet.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">Token Explorer</h2>
-        <span className="text-sm text-gray-500">{tokenCount} token{tokenCount !== 1 ? "s" : ""} created</span>
+        <span className="text-sm text-gray-500">{tokenCount} created</span>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
@@ -138,14 +154,14 @@ export default function TokenExplorer({ onSelectToken, factoryAddress }: Props) 
         </div>
         <div className="card text-center py-4">
           <div className="text-2xl font-bold text-purple-400">{totalRaised}</div>
-          <div className="text-sm text-gray-400">IOPN Total Raised</div>
+          <div className="text-sm text-gray-400">IOPN Raised</div>
         </div>
       </div>
 
       {tokens.length === 0 ? (
         <div className="card text-center py-16 text-gray-500">
           <p>No tokens created yet.</p>
-          <p className="text-sm mt-2">Create the first token using the Create tab above.</p>
+          <p className="text-sm mt-2">Use Create tab to launch a token.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -154,13 +170,9 @@ export default function TokenExplorer({ onSelectToken, factoryAddress }: Props) 
             return (
               <div key={t.curveAddress} className="card cursor-pointer hover:border-purple-500/50 transition-all"
                 onClick={() => onSelectToken(t.curveAddress)}>
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-bold">{t.tokenName}<span className="text-sm text-gray-400 ml-2">{t.tokenSymbol}</span></h3>
-                  </div>
-                </div>
+                <h3 className="font-bold mb-1">{t.tokenName} <span className="text-sm text-gray-400">{t.tokenSymbol}</span></h3>
                 <div className="grid grid-cols-3 gap-2 text-sm mb-3">
-                  <div><div className="text-gray-500">Price</div><div>{t.price} IOPN</div></div>
+                  <div><div className="text-gray-500">Price</div><div>{t.price}</div></div>
                   <div><div className="text-gray-500">Supply</div><div>{t.supply}</div></div>
                   <div><div className="text-gray-500">Raised</div><div>{parseFloat(t.raised || "0").toFixed(4)} IOPN</div></div>
                 </div>
