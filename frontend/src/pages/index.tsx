@@ -79,7 +79,7 @@ export default function Home() {
             )}
             {activeTab === "create" && <CreateToken factoryAddress={FACTORY_ADDRESS as `0x${string}`} />}
             {activeTab === "trade" && (
-              <TradePanel selectedToken={selectedToken} onSelectToken={setSelectedToken} />
+              <TradePanel selectedToken={selectedToken} />
             )}
             {activeTab === "mytokens" && <MyTokens factoryAddress={FACTORY_ADDRESS} />}
             {activeTab === "admin" && <AdminPanel factoryAddress={FACTORY_ADDRESS} adminAddress={ADMIN_ADDRESS} />}
