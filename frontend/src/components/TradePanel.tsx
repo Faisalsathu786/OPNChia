@@ -28,8 +28,8 @@ export default function TradePanel({ selectedToken, onSelectToken }: Props) {
  const [loading, setLoading] = useState(false);
  const [txHash, setTxHash] = useState<string | null>(null);
 
- // For demo — list of fake token addresses
- const [curveAddress, setCurveAddress] = useState(selectedToken || "0x263D9D9B1e26dE17e78D3b5DD919d49638Bad130");
+ // Use the selected token address
+ const curveAddress = selectedToken;
 
  const { data: currentPrice } = useReadContract({
   address: curveAddress as `0x${string}`,
@@ -68,6 +68,14 @@ export default function TradePanel({ selectedToken, onSelectToken }: Props) {
  });
 
  const { writeContract } = useWriteContract();
+
+ if (!curveAddress) {
+   return (
+     <div className="card text-center py-16 text-gray-500">
+       <p>Select a token from Explorer to trade.</p>
+     </div>
+   );
+ }
 
  const handleBuy = async () => {
   if (!buyAmount) return;
