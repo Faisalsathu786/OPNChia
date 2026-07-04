@@ -112,6 +112,5 @@ export default function TradePanel({ selectedToken }: { selectedToken: string | 
    {txHash && <div className="bg-green-900/30 border border-green-700 rounded-lg p-3 mt-4 text-sm text-green-300">Transaction: <a href={`https://testnet.iopn.tech/tx/${txHash}`} target="_blank" className="underline">{txHash.substring(0,20)}...</a></div>}
   </div>
 
-  </div>
  );
 }

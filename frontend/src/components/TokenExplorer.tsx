@@ -118,6 +118,5 @@ export default function TokenExplorer({ onSelectToken, factoryAddress }: { onSel
       )}
     </div>
  
-  </div>
  );
 }
