@@ -76,14 +76,12 @@ export default function TokenExplorer({ onSelectToken, factoryAddress }: Props) 
 
         for (const addr of curveAddrs.slice(0, 50)) {
           try {
-            const [nameR, symR, supR, raiseR, prcR, thrR] = await Promise.all([
-              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "tokenName" }),
-              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "tokenSymbol" }),
-              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "currentSupply" }),
-              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "totalRaised" }),
-              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "getCurrentPrice" }),
-              client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "migrationThreshold" }),
-            ]);
+            const nameR = await client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "tokenName" }).catch(() => "Unknown");
+            const symR = await client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "tokenSymbol" }).catch(() => "???");
+            const supR = await client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "currentSupply" }).catch(() => 0n);
+            const raiseR = await client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "totalRaised" }).catch(() => 0n);
+            const prcR = await client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "getCurrentPrice" }).catch(() => 0n);
+            const thrR = await client.readContract({ address: addr as `0x${string}`, abi: curveAbi, functionName: "migrationThreshold" }).catch(() => 0n);
 
             const raisedVal = raiseR as bigint;
             sum += raisedVal;
