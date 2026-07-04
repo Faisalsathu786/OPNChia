@@ -93,7 +93,7 @@ export default function Home() {
             {activeTab === "explore" && (
               <TokenExplorer onSelectToken={(addr) => { setSelectedToken(addr); setActiveTab("trade"); }} factoryAddress={FACTORY_ADDRESS} />
             )}
-            {activeTab === "create" && <CreateToken factoryAddress={FACTORY_ADDRESS} />}
+            {activeTab === "create" && <CreateToken factoryAddress={FACTORY_ADDRESS as `0x${string}`} />}
             {activeTab === "trade" && (
               <TradePanel selectedToken={selectedToken} onSelectToken={setSelectedToken} />
             )}
