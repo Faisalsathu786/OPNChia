@@ -23,11 +23,11 @@ export default function Home() {
   const [demoMode, setDemoMode] = useState(false);
 
   const tabs: { key: Tab; label: string }[] = [
-    { key: "explore", label: "🔥 Explore" },
-    { key: "create", label: "✨ Create Token" },
-    { key: "trade", label: "📊 Trade" },
-    { key: "mytokens", label: "👛 My Tokens" },
-    { key: "admin", label: "⚙️ Admin" },
+    { key: "explore", label: "Explore Tokens" },
+    { key: "create", label: "Create Token" },
+    { key: "trade", label: "Trade" },
+    { key: "mytokens", label: "My Tokens" },
+    { key: "admin", label: "Admin" },
   ];
 
   return (
@@ -40,7 +40,6 @@ export default function Home() {
       {/* Navbar */}
       <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🔥</span>
           <span className="text-xl font-bold text-white">OPNChia</span>
           <span className="text-xs text-gray-500 ml-2">OPN Chain</span>
         </div>
@@ -50,7 +49,7 @@ export default function Home() {
             className="text-xs text-gray-500 hover:text-gray-300"
             onClick={() => setDemoMode(!demoMode)}
           >
-            {demoMode ? "🔗 Connect Mode" : "🧪 Demo Mode"}
+            {demoMode ? "Connect Mode" : "Demo Mode"}
           </button>
         </div>
       </nav>
@@ -75,7 +74,6 @@ export default function Home() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {!isConnected && !demoMode ? (
           <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔥</div>
             <h2 className="text-2xl font-bold mb-2">Welcome to OPNChia</h2>
             <p className="text-gray-400 mb-6">
               Create and trade tokens on OPN Chain with bonding curve pricing
@@ -93,7 +91,7 @@ export default function Home() {
         ) : (
           <>
             {activeTab === "explore" && (
-              <TokenExplorer onSelectToken={(addr) => { setSelectedToken(addr); setActiveTab("trade"); }} />
+              <TokenExplorer onSelectToken={(addr) => { setSelectedToken(addr); setActiveTab("trade"); }} factoryAddress={FACTORY_ADDRESS} />
             )}
             {activeTab === "create" && <CreateToken factoryAddress={FACTORY_ADDRESS} />}
             {activeTab === "trade" && (
